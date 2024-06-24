@@ -1,29 +1,17 @@
-import { Database } from '@/types/supabase'
-import { createClient } from '@supabase/supabase-js'
+'use server'
 
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { getTodos } from '@/actions/todos'
+import AddTodo from '@/components/AddTodo'
+import TodoList from '@/components/TodoList'
 
 export default async function Home() {
-  const { data, error } = await supabase.from('Todos').select('*')
-
-  if (error) {
-    console.error('error', error)
-  }
+  const { data } = await getTodos()
 
   return (
     <div>
       <h1>Home</h1>
-
-      {data && (
-        <ul>
-          {data.map((todo) => (
-            <li key={todo.id}>{todo.description}</li>
-          ))}
-        </ul>
-      )}
+      <AddTodo />
+      {data && <TodoList todos={data} />}
     </div>
   )
 }
